@@ -1,0 +1,87 @@
+{
+  "pluginAlias": "knx-fan",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "ip": {
+      "title": "KNX Router or Interface",
+      "type": "string",
+      "placeholder": "224.0.23.12",
+      "description": "IP of the KNX Router."
+    },
+    "port": {
+      "title": "KNX Port",
+      "type": "string",
+      "placeholder": "3671",
+      "description": "KNX Port"
+    },
+    "devices": {
+      "type": "array",
+      "items": {
+        "title": "Fans",
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "required": true,
+            "placeholder": "Display Name for Fan"
+          },
+          "set_status": {
+            "title": "Set Status Address",
+            "type": "string",
+            "required": true,
+            "placeholder": "1/1/1",
+            "pattern": "^[0-9]{1,4}/[0-9]{1,4}/[0-9]{1,4}$"
+          },
+          "listen_status": {
+            "title": "Listen Status Address",
+            "type": "string",
+            "required": true,
+            "placeholder": "1/1/1",
+            "pattern": "^[0-9]{1,4}/[0-9]{1,4}/[0-9]{1,4}$"
+          },
+          "set_rotation_speed": {
+            "title": "Set Rotation Speed Address",
+            "type": "string",
+            "required": false,
+            "placeholder": "1/1/1",
+            "pattern": "^[0-9]{1,4}/[0-9]{1,4}/[0-9]{1,4}$"
+          },
+          "listen_rotation_speed": {
+            "title": "Listen Rotation Speed Address",
+            "type": "string",
+            "required": false,
+            "placeholder": "1/1/1",
+            "pattern": "^[0-9]{1,4}/[0-9]{1,4}/[0-9]{1,4}$"
+          }
+        }
+      }
+    }
+  },
+  "layout": [
+    {
+      "key": "devices",
+      "type": "array",
+      "orderable": false,
+      "buttonText": "Add Fan",
+      "items": [
+        "devices[].name",
+        "devices[].set_status",
+        "devices[].listen_status",
+        "devices[].set_rotation_speed",
+        "devices[].listen_rotation_speed"
+      ]
+    },
+    {
+      "type": "section",
+      "title": "Global",
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "ip",
+        "port"
+      ]
+    }
+  ]
+}
