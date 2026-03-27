@@ -1,11 +1,10 @@
 import { AccessoryConfig, AccessoryPlugin, CharacteristicValue, Service } from 'homebridge';
 
 import { Datapoint } from 'knx';
-import fakegato from 'fakegato-history';
 
-import { PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_DISPLAY_NAME } from './settings';
+import { PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_DISPLAY_NAME } from './settings.js';
 
-import { FanPlatform } from './platform';
+import { FanPlatform } from './platform.js';
 
 
 export class FanAccessory implements AccessoryPlugin {
@@ -18,7 +17,8 @@ export class FanAccessory implements AccessoryPlugin {
   private readonly set_rotation_speed: string;
 
   private readonly fanService: Service;
-  private readonly loggingService: fakegato;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private readonly loggingService: any;
   private readonly informationService: Service;
 
   constructor(

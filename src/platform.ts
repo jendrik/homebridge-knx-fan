@@ -4,13 +4,13 @@ import fakegato from 'fakegato-history';
 
 import { Connection } from 'knx';
 
-import { FanAccessory } from './accessory';
+import { FanAccessory } from './accessory.js';
 
 
 export class FanPlatform implements StaticPlatformPlugin {
-  public readonly Service: typeof Service = this.api.hap.Service;
-  public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
-  public readonly uuid: typeof uuid = this.api.hap.uuid;
+  public readonly Service: typeof Service;
+  public readonly Characteristic: typeof Characteristic;
+  public readonly uuid: typeof uuid;
 
   public readonly fakeGatoHistoryService;
 
@@ -23,6 +23,10 @@ export class FanPlatform implements StaticPlatformPlugin {
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
+    this.Service = this.api.hap.Service;
+    this.Characteristic = this.api.hap.Characteristic;
+    this.uuid = this.api.hap.uuid;
+
     this.fakeGatoHistoryService = fakegato(this.api);
 
     // connect
@@ -40,7 +44,8 @@ export class FanPlatform implements StaticPlatformPlugin {
     });
 
     // read devices
-    config.devices.forEach(element => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    config.devices.forEach((element: any) => {
       if (element.name !== undefined && element.listen_status && element.set_status) {
         this.devices.push(new FanAccessory(this, element));
       }
