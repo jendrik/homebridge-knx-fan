@@ -1,10 +1,11 @@
-import { AccessoryConfig, AccessoryPlugin, CharacteristicValue, Service } from 'homebridge';
+import { AccessoryPlugin, CharacteristicValue, Service } from 'homebridge';
 
 import { Datapoint } from 'knx';
 
 import { PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_DISPLAY_NAME } from './settings.js';
 
 import { FanPlatform } from './platform.js';
+import { FanDeviceConfig, normalizeRotationSpeed } from './config.js';
 
 
 export class FanAccessory implements AccessoryPlugin {
@@ -13,8 +14,8 @@ export class FanAccessory implements AccessoryPlugin {
   private readonly displayName: string;
   private readonly listen_status: string;
   private readonly set_status: string;
-  private readonly listen_rotation_speed: string;
-  private readonly set_rotation_speed: string;
+  private readonly listen_rotation_speed?: string;
+  private readonly set_rotation_speed?: string;
 
   private readonly fanService: Service;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,7 +24,7 @@ export class FanAccessory implements AccessoryPlugin {
 
   constructor(
     private readonly platform: FanPlatform,
-    private readonly config: AccessoryConfig,
+    private readonly config: FanDeviceConfig,
   ) {
     this.name = config.name;
     this.listen_status = config.listen_status;
@@ -95,7 +96,7 @@ export class FanAccessory implements AccessoryPlugin {
         this.fanService.getCharacteristic(platform.Characteristic.RotationSpeed)
           .onSet(async (value: CharacteristicValue) => {
             platform.log.info(`Set Roation Speed: ${value} - ${Number(value)}`);
-            dp_set_rotation_speed.write(Number(value));
+            dp_set_rotation_speed.write(normalizeRotationSpeed(value));
           });
       }
     }

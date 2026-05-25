@@ -5,6 +5,7 @@ import fakegato from 'fakegato-history';
 import { Connection } from 'knx';
 
 import { FanAccessory } from './accessory.js';
+import { ParsedPlatformConfig, parsePlatformConfig } from './config.js';
 
 
 export class FanPlatform implements StaticPlatformPlugin {
@@ -15,6 +16,7 @@ export class FanPlatform implements StaticPlatformPlugin {
   public readonly fakeGatoHistoryService;
 
   public readonly connection: Connection;
+  public readonly parsedConfig: ParsedPlatformConfig;
 
   private readonly devices: FanAccessory[] = [];
 
@@ -28,11 +30,12 @@ export class FanPlatform implements StaticPlatformPlugin {
     this.uuid = this.api.hap.uuid;
 
     this.fakeGatoHistoryService = fakegato(this.api);
+    this.parsedConfig = parsePlatformConfig(config, log);
 
     // connect
     this.connection = new Connection({
-      ipAddr: config.ip ?? '224.0.23.12',
-      ipPort: config.port ?? 3671,
+      ipAddr: this.parsedConfig.ip,
+      ipPort: this.parsedConfig.port,
       handlers: {
         connected: function () {
           log.info('KNX connected');
@@ -44,12 +47,9 @@ export class FanPlatform implements StaticPlatformPlugin {
     });
 
     // read devices
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config.devices.forEach((element: any) => {
-      if (element.name !== undefined && element.listen_status && element.set_status) {
-        this.devices.push(new FanAccessory(this, element));
-      }
-    });
+    for (const device of this.parsedConfig.devices) {
+      this.devices.push(new FanAccessory(this, device));
+    }
 
     log.info('finished initializing!');
   }
