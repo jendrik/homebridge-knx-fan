@@ -37,11 +37,11 @@ export class FanPlatform implements StaticPlatformPlugin {
       ipAddr: this.parsedConfig.ip,
       ipPort: this.parsedConfig.port,
       handlers: {
-        connected: function () {
+        connected() {
           log.info('KNX connected');
         },
-        error: function (connstatus: unknown) {
-          log.error(`KNX status: ${connstatus}`);
+        error(connstatus: unknown) {
+          log.error(`KNX status: ${String(connstatus)}`);
         },
       },
     });
@@ -51,7 +51,7 @@ export class FanPlatform implements StaticPlatformPlugin {
       this.devices.push(new FanAccessory(this, device));
     }
 
-    log.info('finished initializing!');
+    log.info(`Finished initializing ${this.devices.length} KNX fan accessory/accessories.`);
   }
 
   accessories(callback: (foundAccessories: AccessoryPlugin[]) => void): void {
