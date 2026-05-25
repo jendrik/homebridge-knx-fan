@@ -12,8 +12,8 @@ Homebridge plugin for controlling KNX-based fans via Apple HomeKit.
 
 ## Requirements
 
-- [Homebridge](https://homebridge.io) ^1.8.0 or ^2.0.0
-- Node.js ^20.18.0 or ^22.10.0
+- [Homebridge](https://homebridge.io) ^2.0.0
+- Node.js ^22 or ^24
 - A KNX IP router or interface reachable on the network
 
 ## Installation
