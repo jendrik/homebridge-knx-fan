@@ -13,7 +13,7 @@ export class FanPlatform implements StaticPlatformPlugin {
   public readonly Characteristic: typeof Characteristic;
   public readonly uuid: typeof uuid;
 
-  public readonly fakeGatoHistoryService;
+  public readonly fakeGatoHistoryService: ReturnType<typeof fakegato>;
 
   public readonly connection: Connection;
   public readonly parsedConfig: ParsedPlatformConfig;

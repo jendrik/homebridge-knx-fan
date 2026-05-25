@@ -22,8 +22,7 @@ export class FanAccessory implements AccessoryPlugin {
   private readonly set_rotation_speed?: string;
 
   private readonly fanService: Service;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private readonly loggingService: any;
+  private readonly loggingService: InstanceType<FanPlatform['fakeGatoHistoryService']>;
   private readonly informationService: Service;
 
   constructor(
