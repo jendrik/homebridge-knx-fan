@@ -8,4 +8,3 @@ export const PLATFORM_NAME = 'knx-fan';
  */
 export const PLUGIN_NAME = 'homebridge-knx-fan';
 export const PLUGIN_DISPLAY_NAME = 'KNX Fan';
-export const PLUGIN_VERSION = '0.2.0';

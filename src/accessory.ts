@@ -1,12 +1,16 @@
 import { AccessoryPlugin, CharacteristicValue, Service } from 'homebridge';
 
+import { createRequire } from 'node:module';
+
 import { Datapoint } from 'knx';
 
-import { PLUGIN_NAME, PLUGIN_VERSION, PLUGIN_DISPLAY_NAME } from './settings.js';
+import { PLUGIN_NAME, PLUGIN_DISPLAY_NAME } from './settings.js';
 
 import { FanPlatform } from './platform.js';
 import { FanDeviceConfig, normalizeRotationSpeed } from './config.js';
 
+const require = createRequire(import.meta.url);
+const packageJson = require('../package.json') as { version: string };
 
 export class FanAccessory implements AccessoryPlugin {
   private readonly uuid_base: string;
@@ -40,9 +44,9 @@ export class FanAccessory implements AccessoryPlugin {
       .setCharacteristic(platform.Characteristic.Manufacturer, '@jendrik')
       .setCharacteristic(platform.Characteristic.Model, PLUGIN_DISPLAY_NAME)
       .setCharacteristic(platform.Characteristic.SerialNumber, this.displayName)
-      .setCharacteristic(platform.Characteristic.FirmwareRevision, PLUGIN_VERSION);
+      .setCharacteristic(platform.Characteristic.FirmwareRevision, packageJson.version);
 
-    this.fanService = new platform.Service.Fan(this.name);
+    this.fanService = new platform.Service.Fanv2(this.name);
 
     this.loggingService = new platform.fakeGatoHistoryService('switch', this, { storage: 'fs', log: platform.log });
 
@@ -58,15 +62,18 @@ export class FanAccessory implements AccessoryPlugin {
     }, platform.connection);
 
     dp_listen_status.on('change', (oldValue: number, newValue: number) => {
-      platform.log.info(`Fan Status: ${newValue}`);
-      this.fanService.getCharacteristic(platform.Characteristic.On).updateValue(newValue);
+      platform.log.info(`[${this.name}] Fan status: ${Boolean(newValue)}`);
+      this.fanService.getCharacteristic(platform.Characteristic.Active).updateValue(
+        newValue ? platform.Characteristic.Active.ACTIVE : platform.Characteristic.Active.INACTIVE,
+      );
       this.loggingService._addEntry({ time: Math.round(new Date().valueOf() / 1000), status: newValue ? 1 : 0 });
     });
 
-    this.fanService.getCharacteristic(platform.Characteristic.On)
+    this.fanService.getCharacteristic(platform.Characteristic.Active)
       .onSet(async (value: CharacteristicValue) => {
-        platform.log.info(`Set Status: ${value} - ${Boolean(value)}`);
-        dp_set_status.write(Boolean(value));
+        const enabled = value === platform.Characteristic.Active.ACTIVE;
+        platform.log.info(`[${this.name}] Set status: ${enabled}`);
+        dp_set_status.write(enabled);
       });
 
     // Rotation Speed
@@ -81,7 +88,7 @@ export class FanAccessory implements AccessoryPlugin {
         }, platform.connection);
 
         dp_listen_rotation_speed.on('change', (oldValue: number, newValue: number) => {
-          platform.log.info(`Fan Rotation Speed: ${newValue}`);
+          platform.log.info(`[${this.name}] Fan rotation speed: ${newValue}`);
           this.fanService.getCharacteristic(platform.Characteristic.RotationSpeed).updateValue(newValue);
           // TODO: update on/off state here as well?
         });
@@ -95,8 +102,9 @@ export class FanAccessory implements AccessoryPlugin {
 
         this.fanService.getCharacteristic(platform.Characteristic.RotationSpeed)
           .onSet(async (value: CharacteristicValue) => {
-            platform.log.info(`Set Roation Speed: ${value} - ${Number(value)}`);
-            dp_set_rotation_speed.write(normalizeRotationSpeed(value));
+            const speed = normalizeRotationSpeed(value);
+            platform.log.info(`[${this.name}] Set rotation speed: ${speed}`);
+            dp_set_rotation_speed.write(speed);
           });
       }
     }
