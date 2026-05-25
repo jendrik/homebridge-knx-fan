@@ -61,7 +61,7 @@ The plugin can be configured through the Homebridge UI or by editing `config.jso
 |--------|----------|---------|-------------|
 | `platform` | Yes | — | Must be `knx-fan` |
 | `ip` | No | `224.0.23.12` | IP address of the KNX router or interface |
-| `port` | No | `3671` | KNX port |
+| `port` | No | `3671` | KNX port number |
 | `devices` | Yes | — | Array of fan device configurations |
 
 ### Device Options
